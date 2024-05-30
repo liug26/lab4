@@ -196,6 +196,8 @@ void write_superblock(int fd) {
 
 	struct ext2_superblock superblock = {0};
 
+	// TODO It's all yours
+	// TODO finish the superblock number setting
 	superblock.s_inodes_count = NUM_INODES * 1;
 	superblock.s_blocks_count = NUM_BLOCKS * 1;
 	superblock.s_r_blocks_count = 0;
@@ -204,13 +206,13 @@ void write_superblock(int fd) {
 	superblock.s_first_data_block = 1; /* First Data Block */
 	superblock.s_log_block_size = 0;					/* 1024 */
 	superblock.s_log_frag_size = 0;						/* 1024 */
-	superblock.s_blocks_per_group = NUM_BLOCKS*8;
-	superblock.s_frags_per_group = NUM_BLOCKS*8;
+	superblock.s_blocks_per_group = NUM_BLOCKS * 8;
+	superblock.s_frags_per_group = NUM_BLOCKS * 8;
 	superblock.s_inodes_per_group = NUM_INODES;
 	superblock.s_mtime = 0;				/* Mount time */
 	superblock.s_wtime = current_time;	/* Write time */
 	superblock.s_mnt_count         = 0; /* Number of times mounted so far */
-	superblock.s_max_mnt_count     = 0; /* Make this unlimited */
+	superblock.s_max_mnt_count     = -1; /* Make this unlimited */
 	superblock.s_magic = EXT2_SUPER_MAGIC; /* ext2 Signature */
 	superblock.s_state             = 1; /* File system is clean */
 	superblock.s_errors            = 1; /* Ignore the error (continue on) */
@@ -257,7 +259,8 @@ void write_block_group_descriptor_table(int fd) {
 
 	struct ext2_block_group_descriptor block_group_descriptor = {0};
 
-	
+	// TODO It's all yours
+	// TODO finish the block group descriptor number setting
 	block_group_descriptor.bg_block_bitmap = BLOCK_BITMAP_BLOCKNO;
 	block_group_descriptor.bg_inode_bitmap = INODE_BITMAP_BLOCKNO;
 	block_group_descriptor.bg_inode_table = INODE_TABLE_BLOCKNO;
@@ -281,19 +284,17 @@ void write_block_bitmap(int fd)
 
 	// TODO It's all yours
 	u8 map_value[BLOCK_SIZE];
-	for (int i = 0; i < BLOCK_SIZE; i++) {
-		if (i < 2) {
+
+	for (int i = 0; i < BLOCK_SIZE; i++)
+    {
+		if (i < 2)
 			map_value[i] = 0b11111111;
-		}
-		else if (i == 2) {
+		else if (i == 2)
 			map_value[i] = 0b01111111;
-		}
-		else if (i < 128) {
+		else if (i < 128)
 			map_value[i] = 0b00000000;
-		}
-		else {
+		else
 			map_value[i] = 0b11111111;
-		}
 	}
 	map_value[127] = 0b10000000;
 
@@ -313,19 +314,17 @@ void write_inode_bitmap(int fd)
 
 	// TODO It's all yours
 	u8 map_value[BLOCK_SIZE];
-	for (int i = 0; i < BLOCK_SIZE; i++) {
-		if (i == 0) {
+
+	for (int i = 0; i < BLOCK_SIZE; i++)
+    {
+		if (i == 0)
 			map_value[i] = 0b11111111;
-		}
-		else if (i == 1) {
+		else if (i == 1)
 			map_value[i] = 0b00011111;
-		}
-		else if (i < 16){
+		else if (i < 16)
 			map_value[i] = 0b00000000;
-		}
-		else {
+		else
 			map_value[i] = 0b11111111;
-		}
 	}
 
 	if (write(fd, map_value, BLOCK_SIZE) != BLOCK_SIZE)
@@ -374,7 +373,7 @@ void write_inode_table(int fd) {
 
 	// TODO It's all yours
 	// TODO finish the inode entries for the other files
-	struct ext2_inode root_inode = {0};
+    struct ext2_inode root_inode = {0};
 	root_inode.i_mode = EXT2_S_IFDIR
 	                              | EXT2_S_IRUSR
 	                              | EXT2_S_IWUSR
@@ -434,8 +433,8 @@ void write_inode_table(int fd) {
 
 void write_root_dir_block(int fd)
 {
-	
-	off_t off = BLOCK_OFFSET(ROOT_DIR_BLOCKNO);
+	// TODO It's all yours
+    off_t off = BLOCK_OFFSET(ROOT_DIR_BLOCKNO);
 	off = lseek(fd, off, SEEK_SET);
 	if (off == -1) {
 		errno_exit("lseek");
@@ -507,15 +506,13 @@ void write_lost_and_found_dir_block(int fd) {
 void write_hello_world_file_block(int fd)
 {
 	// TODO It's all yours
-	off_t off = BLOCK_OFFSET(HELLO_WORLD_FILE_BLOCKNO);
+    off_t off = BLOCK_OFFSET(HELLO_WORLD_FILE_BLOCKNO);
 	off = lseek(fd, off, SEEK_SET);
-	if (off == -1) {
+	if (off == -1)
 		errno_exit("lseek");
-	}
 
-	if (write(fd, "Hello world\n", 12) != 12) {
+	if (write(fd, "Hello world\n", 12) != 12)
 		errno_exit("write");
-	}
 }
 
 int main(int argc, char *argv[]) {
